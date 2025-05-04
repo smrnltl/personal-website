@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smaran Luitel | Portfolio</title>
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: { colors: { accent: '#6366F1' } } } };
+  </script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lottie -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --accent: #6366F1; }
+    html { transition: background-color .5s, color .5s; }
+    body { background: linear-gradient(135deg, #1e1e2f, #14141f); animation: bgShift 20s infinite alternate; }
+    @keyframes bgShift { to { background: linear-gradient(135deg, #14141f, #1e1e2f); } }
+    #progress-bar { position: fixed; top:0; left:0; height:4px; background: var(--accent); width:0; z-index:60; }
+    #cursor-dot { position:fixed; top:0; left:0; width:16px; height:16px; border-radius:50%; background:var(--accent); pointer-events:none; transform:translate(-50%,-50%) scale(1); transition:transform .1s ease; z-index:70; }
+    .monitor { width:340px; height:240px; background-color:var(--monitor-bg,#222); border:6px solid var(--accent); border-radius:12px; position:relative; display:flex; align-items:center; justify-content:center; opacity:0; animation:fadeIn 1s forwards; }
+    .monitor::after { content:''; width:100px; height:12px; background:var(--accent); position:absolute; bottom:-24px; left:50%; transform:translateX(-50%); border-radius:6px; }
+    @keyframes fadeIn { to{opacity:1;} }
+    .delay-1{animation-delay:0.5s;} .delay-2{animation-delay:1.5s;} 
+    .quote {
+    opacity: 0;
+    animation: fadeIn 1s forwards 3.5s;
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 18px;
+    font-style: italic;
+    color: #aaa;
+}
+.name {
+    opacity: 0;
+    animation: fadeIn 1s forwards 2.5s;
+    text-align: center;
+    margin-top: 3.5rem;
+    font-size: 44px;
+    font-weight: 600;
+    color: #aaa;
+}
+    .dark .monitor{--monitor-bg:#111;}
+    section{position:relative;padding:4rem 1rem;}
+    #code-preview { max-width:600px; margin:auto; }
+    #code-editor { width:100%; height:120px; background:#eee; color:#000; font-family:monospace; font-size:0.875rem; padding:0.5rem; border-radius:0.5rem; }
+    .dark #code-editor { background:#1e1e2f; color:#fff; }
+    #preview-frame { width:100%; height:200px; border:1px solid #444; margin-top:0.5rem; border-radius:0.5rem; background: #fff; color:#000; }
+    .dark #preview-frame { background:#000; color:#fff; }
+    #data-stream { position:fixed; right:0; top:50%; transform:translateY(-50%); width:80px; height:200px; pointer-events:none; z-index:50; }
+    audio { display:none; }
+    #prediction-popup { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); background:rgba(0,0,0,0.8); color:#fff; padding:1rem 2rem; border-radius:8px; z-index:80; transition:transform .3s ease; }
+    #prediction-popup.show { transform:translate(-50%,-50%) scale(1); }
+    .link{
+        color:#6366F1
+    }
+  </style>
+</head>
+<body class="font-inter relative">
+  <!-- <audio id="bg-music" src="assets/music.mp3" loop autoplay type="audio/mp3"></audio> -->
+  <audio id="bg-music" autoplay loop playsinline>
+    <source src="assets/music.mp3" type="audio/mpeg">
+    <source src="assets/music.ogg" type="audio/ogg">
+    Your browser doesn’t support audio.
+  </audio>
+  <div id="progress-bar"></div>
+  <div id="cursor-dot"></div>
+  <div id="lottie-anim" class="absolute top-6 right-6 w-24 h-24"></div>
+  <canvas id="data-stream"></canvas>
+  <div id="prediction-popup"></div>
+
+  <header class="fixed w-full bg-transparent py-4 z-50 flex justify-center">
+    <nav class="bg-black bg-opacity-50 rounded-full px-6 py-2 backdrop-blur-md flex space-x-6 text-white">
+      <a href="#about">About</a><a href="#experience">Experience</a><a href="#skills">Skills</a><a href="#projects">Projects</a><a href="#contact">Contact</a>
+      <button id="theme-toggle" class="ml-4 text-white">Toggle Theme</button>
+    </nav>
+  </header>
+
+  <section id="hero" class="flex flex-col items-center justify-center" style="min-height:80vh;">
+    <div class="flex flex-col md:flex-row items-center justify-center gap-12">
+      <div class="monitor delay-1">
+        <div class="text-center text-white px-6">
+          <h2 class="text-3xl font-extrabold">Chapter I.</h2>
+          <p class="text-xl mt-2">Senior Software Engineer (.NET)</p>
+        </div>
+      </div>
+      <div class="monitor delay-2">
+        <div class="text-center text-white px-6">
+          <h2 class="text-3xl font-extrabold">Chapter II.</h2>
+          <p class="text-xl mt-2">Machine Learning / AI Researcher</p>
+        </div>
+      </div>
+    </div>
+    <div class="name">Smaran Luitel</div>
+    <div class="quote">"Carving the dots of excellence"</div>
+  </section>
+
+  <section id="about" class="bg-white text-gray-900">
+    <h2 class="text-3xl font-semibold text-center mb-4">About Me</h2>
+    <p class="max-w-2xl mx-auto text-center">Full-stack .NET engineer turned ML/AI researcher, blending robust software practices with data-driven insights to build scalable, intelligent solutions.</p>
+  </section>
+
+  <section id="experience" class="text-white bg-gradient-to-br from-gray-800 to-gray-900">
+    <h2 class="text-3xl font-semibold text-center mb-8 text-white">Career Summary</h2>
+    <div class="max-w-4xl mx-auto px-6 space-y-12 text-white">
+      <!-- Senior Software Engineer -->
+      <div class="bg-gray-800 bg-opacity-50 p-6 rounded-lg">
+        <h3 class="text-2xl font-bold">Senior Software Engineer (.NET)</h3>
+        <p class="mt-1 text-gray-300">Source Code Pvt. Ltd. | May 2018 – Present</p>
+        <ul class="list-disc list-inside mt-4 space-y-2">
+          <li>Lead development of complex software solutions using C#, ASP.NET, and SQL Server</li>
+          <li>Mentor junior developers and guide the development team</li>
+          <li>Implemented performance optimization techniques resulting in substantial application performance increases</li>
+          <li>Re-engineered and migrated legacy projects to latest technologies</li>
+        </ul>
+      </div>
+      <!-- Associate Software Engineer -->
+      <div class="bg-gray-800 bg-opacity-50 p-6 rounded-lg">
+        <h3 class="text-2xl font-bold">Associate Software Engineer (.NET)</h3>
+        <p class="mt-1 text-gray-300">Techtonne Solutions (Braindigit IT Solutions) | Jun 2017 – May 2018</p>
+        <ul class="list-disc list-inside mt-4 space-y-2">
+          <li>Developed and maintained web applications using C#, ASP.NET, and SQL Server</li>
+          <li>Collaborated closely with QA to ensure high-quality software releases</li>
+          <li>Designed and implemented new features to improve application functionality</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills" class="bg-white text-gray-900">
+    <h2 class="text-3xl font-semibold text-center mb-4">Skills</h2>
+    <canvas id="skills-chart" class="max-w-md mx-auto"></canvas>
+  </section>
+
+  <section id="projects" class="text-white">
+    <h2 class="text-3xl font-semibold text-center mb-4">I dare you to type something!</h2>
+    <div id="code-preview">
+      <textarea id="code-editor">&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;h1&gt;Hello Partner!&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;</textarea>
+      <button id="run-code" class="mt-2 px-4 py-2 bg-accent text-white rounded">Run</button>
+      <iframe id="preview-frame"></iframe>
+    </div>
+  </section>
+
+  <section id="contact" class="bg-white text-gray-900">
+    <h2 class="text-3xl font-semibold text-center mb-4">Contact & Predictions</h2>
+    <div class="text-center mb-4">
+      <button id="predict-btn" class="px-4 py-2 bg-accent text-white rounded">Make a Prediction</button>
+    </div>
+    <div class="max-w-md mx-auto text-center">
+      <p>Phone: +977 9849302279</p>
+      <p>Email: smaran.luitel1@gmail.com</p>
+      <p>LinkedIn: <a href="https://www.linkedin.com/in/smaran-luitel/" target="_blank" class="link">smaran-luitel</a></p>
+    </div>
+  </section>
+
+  <script>
+    const progress=document.getElementById('progress-bar');window.addEventListener('scroll',()=>{const p=window.scrollY/(document.body.scrollHeight-window.innerHeight);progress.style.width=`${p*100}%`;});
+    const cursor=document.getElementById('cursor-dot');document.addEventListener('mousemove',e=>{cursor.style.top=`${e.clientY}px`;cursor.style.left=`${e.clientX}px`;cursor.style.transform=`translate(-50%,-50%) scale(1.5)`});document.addEventListener('mouseout',()=>cursor.style.transform=`translate(-50%,-50%) scale(1)`);
+    lottie.loadAnimation({container:document.getElementById('lottie-anim'),renderer:'svg',loop:true,autoplay:true,path:'https://assets2.lottiefiles.com/packages/lf20_usmfx6bp.json'});
+    const canvas=document.getElementById('data-stream'),ctx=canvas.getContext('2d');canvas.width=80;canvas.height=200;let dots=[];function drawDots(){ctx.clearRect(0,0,80,200);dots.forEach(d=>{ctx.fillStyle='rgba(255,255,255,0.6)';ctx.beginPath();ctx.arc(d.x,d.y,2,0,Math.PI*2);ctx.fill();d.y-=d.speed});dots=dots.filter(d=>d.y>0);}window.addEventListener('scroll',()=>{dots.push({x:Math.random()*80,y:200,speed:1+Math.random()*2});});setInterval(drawDots,30);
+    const ctxSkills=document.getElementById('skills-chart');new Chart(ctxSkills,{type:'radar',data:{labels:['C#','.NET','AI/ML','SQL','JavaScript','DevOps'],datasets:[{label:'Proficiency',data:[90,85,75,90,80,65],backgroundColor:'rgba(99,102,241,0.2)',borderColor:'var(--accent)',pointBackgroundColor:'var(--accent)'}]},options:{scale:{ticks:{beginAtZero:true,min:0,max:100,stepSize:10}}}});
+    document.getElementById('run-code').addEventListener('click',()=>{
+      const code = document.getElementById('code-editor').value;
+      const isDark = document.documentElement.classList.contains('dark');
+      const style = isDark
+        ? '<style>body{background:#000;color:#fff;margin:0;padding:0;font-family:monospace;}</style>'
+        : '<style>body{background:#fff;color:#000;margin:0;padding:0;font-family:monospace;}</style>';
+      document.getElementById('preview-frame').srcdoc = style + code;
+    });
+    const popup=document.getElementById('prediction-popup');const msgs=[
+      'Optimize your algorithms today',
+      'Data reveals the path forward',
+      'Predictive insights are near',
+      'Your code will compile flawlessly',
+      'Models converge in your favor',
+      'Accuracy exceeds expectations',
+      'Uncertainty is just data',
+      'Patterns emerge clearly',
+      'Insights spark innovation',
+      'Your predictions hit the mark'
+    ];document.getElementById('predict-btn').addEventListener('click',()=>{
+      const msg=msgs[Math.floor(Math.random()*msgs.length)];popup.textContent=msg;popup.classList.add('show');setTimeout(()=>popup.classList.remove('show'),3000);
+    });
+    document.getElementById('theme-toggle').addEventListener('click',()=>{
+      document.documentElement.classList.toggle('dark');
+    });
+    const bg = document.getElementById('bg-music');
+    // Already muted by attribute, so it will start
+    bg.play().catch(console.warn);
+
+    // Unmute on first user interaction
+    document.body.addEventListener('click', function once() {
+      bg.muted = false;
+      bg.play().catch(console.error);
+      document.body.removeEventListener('click', once);
+    });
+  </script>
+</body>
+</html>
